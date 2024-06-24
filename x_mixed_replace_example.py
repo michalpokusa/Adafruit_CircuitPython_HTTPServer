@@ -70,8 +70,6 @@ class XMixedReplaceResponse(Response):
             if 0 < len(frame):  # Don't send empty chunks
                 self._send_frame(frame)
 
-        # Empty chunk to indicate end of response
-        self._send_frame()
         self._close_connection()
 
 
@@ -95,6 +93,4 @@ def live_feed_handler(request: Request):
     )
 
 
-# Ports below 1024 are reserved for root user only.
-# If you want to run this example on a port below 1024, you need to run it as root (or with `sudo`).
-server.serve_forever("0.0.0.0", 5045)
+server.serve_forever()
