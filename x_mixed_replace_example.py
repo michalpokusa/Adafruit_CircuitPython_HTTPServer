@@ -3,18 +3,19 @@
 # SPDX-License-Identifier: Unlicense
 
 try:
-    from typing import Dict, Union, Tuple, Generator, Any
+    from typing import Any, Dict, Generator, Tuple, Union
 except ImportError:
     pass
 
 from random import choice
 from time import sleep
-import socket
 
-from adafruit_httpserver import Server, Request, Response, Status, Headers, OK_200
+import socketpool
+import wifi
 
+from adafruit_httpserver import OK_200, Headers, Request, Response, Server, Status
 
-pool = socket
+pool = socketpool.SocketPool(wifi.radio)
 server = Server(pool, "/static", debug=True)
 
 
@@ -54,13 +55,11 @@ class XMixedReplaceResponse(Response):
         encoded_frame = frame.encode("utf-8") if isinstance(frame, str) else frame
 
         self._send_bytes(
-            self._request.connection, bytes(f"{self._boundary}\r\n", encoding="utf-8")
+            self._request.connection, bytes(f"{self._boundary}\r\n", "utf-8")
         )
         self._send_bytes(
             self._request.connection,
-            bytes(
-                f"Content-Type: {self._frame_content_type}\r\n\r\n", encoding="utf-8"
-            ),
+            bytes(f"Content-Type: {self._frame_content_type}\r\n\r\n", "utf-8"),
         )
         self._send_bytes(self._request.connection, bytes(encoded_frame) + b"\r\n")
 
